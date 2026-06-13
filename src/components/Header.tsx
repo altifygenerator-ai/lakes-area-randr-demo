@@ -7,16 +7,16 @@ import { siteData } from "@/data/site";
 import { FiMenu, FiPhone, FiX } from "react-icons/fi";
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
-    <header className="header">
-      <div className="header-inner">
-        <a href="/" className="logo-link" aria-label={siteData.shortName}>
+    <header className="site-header">
+      <div className="site-header-bar">
+        <a href="/" className="site-header-logo" aria-label={siteData.shortName}>
           <img src={siteData.logo.src} alt={siteData.logo.alt} />
         </a>
 
-        <nav className="nav desktop-nav" aria-label="Primary navigation">
+        <nav className="site-header-nav" aria-label="Main navigation">
           {siteData.nav.map((item) => (
             <a key={item.href} href={item.href}>
               {item.label}
@@ -24,42 +24,38 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="header-actions">
-          <a className="header-phone" href={`tel:${siteData.phone}`}>
+        <div className="site-header-actions">
+          <a className="site-header-phone" href={`tel:${siteData.phone}`}>
             <FiPhone />
             <span>{siteData.phone}</span>
           </a>
 
           <button
-            className="mobile-menu-button"
+            className="site-header-menu-button"
             type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            onClick={() => setOpen((current) => !current)}
           >
-            {menuOpen ? <FiX /> : <FiMenu />}
+            {open ? <FiX /> : <FiMenu />}
           </button>
         </div>
       </div>
 
-      <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
+      <div className={`site-mobile-menu ${open ? "is-open" : ""}`}>
         <nav aria-label="Mobile navigation">
           {siteData.nav.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-            >
+            <a key={item.href} href={item.href} onClick={() => setOpen(false)}>
               {item.label}
             </a>
           ))}
 
           <a
-            className="mobile-menu-cta"
-            href="/contact"
-            onClick={() => setMenuOpen(false)}
+            className="site-mobile-menu-cta"
+            href={`tel:${siteData.phone}`}
+            onClick={() => setOpen(false)}
           >
-            Contact Us
+            Call {siteData.phone}
           </a>
         </nav>
       </div>
