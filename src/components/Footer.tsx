@@ -34,7 +34,17 @@ export default function Footer() {
 
       <div className="container footer-bottom">
         <span>{siteData.businessName}</span>
-        <span>{siteData.website}</span>
+
+        <div className="footer-bottom-right">
+          <span>{siteData.website}</span>
+          <a
+            href="https://hometownwebservicesar.cc"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Website by Hometown Web Services
+          </a>
+        </div>
       </div>
     </footer>
   );
