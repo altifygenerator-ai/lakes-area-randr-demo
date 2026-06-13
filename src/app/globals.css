@@ -55,14 +55,12 @@ img {
 
 /* Header */
 
-/* Header */
-
 .header {
   position: fixed;
   top: 22px;
   left: 0;
   right: 0;
-  z-index: 35;
+  z-index: 999;
   padding: 0;
 }
 
@@ -75,7 +73,7 @@ img {
   gap: 2rem;
   padding: 0.8rem 1.25rem;
   border: 1px solid rgba(255, 250, 240, 0.22);
-  background: rgba(31, 63, 29, 0.72);
+  background: rgba(31, 63, 29, 0.74);
   backdrop-filter: blur(16px);
   border-radius: 999px;
   box-shadow: 0 20px 60px rgba(20, 44, 20, 0.24);
@@ -157,39 +155,6 @@ img {
 
 .mobile-menu {
   display: none;
-}
-
-.mobile-menu nav {
-  width: min(100% - 36px, 1180px);
-  margin: 0.65rem auto 0;
-  padding: 1rem;
-  border-radius: 28px;
-  background: rgba(31, 63, 29, 0.94);
-  border: 1px solid rgba(255, 250, 240, 0.16);
-  box-shadow: 0 22px 60px rgba(20, 44, 20, 0.26);
-  backdrop-filter: blur(16px);
-}
-
-.mobile-menu a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--cream);
-  font-weight: 900;
-  padding: 0.9rem 0.95rem;
-  border-radius: 18px;
-}
-
-.mobile-menu a:hover {
-  background: rgba(255, 250, 240, 0.1);
-  color: var(--orange);
-}
-
-.mobile-menu-cta {
-  margin-top: 0.5rem;
-  background: var(--orange);
-  color: var(--green-dark) !important;
-  justify-content: center !important;
 }
 /* Hero */
 

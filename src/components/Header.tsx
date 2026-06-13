@@ -1,3 +1,5 @@
+// src/components/Header.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -53,8 +55,8 @@ export default function Header() {
           ))}
 
           <a
-            href="/contact"
             className="mobile-menu-cta"
+            href="/contact"
             onClick={() => setMenuOpen(false)}
           >
             Contact Us
