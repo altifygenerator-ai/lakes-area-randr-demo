@@ -2,6 +2,7 @@
 
 import type { Metadata } from "next";
 import { Dancing_Script, Raleway } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const siteUrl = "https://lakesarearandr.com";
@@ -45,6 +46,9 @@ export const metadata: Metadata = {
   publisher: "Lakes Area R&R",
   alternates: {
     canonical: siteUrl,
+  },
+  verification: {
+    google: "URcYpOSzzLUZwaqhvg5q0a96w9awRIY0yleUEWDfaVk",
   },
   openGraph: {
     type: "website",
@@ -91,7 +95,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${script.variable} ${body.variable}`}>{children}</body>
+      <body className={`${script.variable} ${body.variable}`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
