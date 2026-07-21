@@ -1,10 +1,15 @@
 "use client";
 
 import { siteData } from "@/data/site";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiSend } from "react-icons/fi";
 
 type FormStatus = "idle" | "sending" | "success" | "error";
+
+type CaptchaChallenge = {
+  question: string;
+  token: string;
+};
 
 type ContactFormProps = {
   formType?: "contact" | "quote" | "rental";
@@ -18,10 +23,47 @@ export default function ContactForm({
   buttonLabel = "Send Message",
 }: ContactFormProps) {
   const [status, setStatus] = useState<FormStatus>("idle");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [captcha, setCaptcha] = useState<CaptchaChallenge | null>(null);
+
+  const loadCaptcha = useCallback(async () => {
+    try {
+      const response = await fetch("/api/contact", { cache: "no-store" });
+
+      if (!response.ok) {
+        throw new Error("Unable to load security question");
+      }
+
+      const challenge = (await response.json()) as CaptchaChallenge;
+      setCaptcha(challenge);
+    } catch {
+      setCaptcha(null);
+      setStatus("error");
+      setStatusMessage(
+        "The security question could not load. Please refresh the page or call 218-454-3336."
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadCaptcha();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [loadCaptcha]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!captcha) {
+      setStatus("error");
+      setStatusMessage("Please wait for the security question to load.");
+      return;
+    }
+
     setStatus("sending");
+    setStatusMessage("");
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -35,6 +77,9 @@ export default function ContactForm({
       date: String(formData.get("date") || "").trim(),
       duration: String(formData.get("duration") || "").trim(),
       message: String(formData.get("message") || "").trim(),
+      captchaAnswer: String(formData.get("captchaAnswer") || "").trim(),
+      captchaToken: captcha.token,
+      website: String(formData.get("website") || "").trim(),
     };
 
     try {
@@ -46,14 +91,26 @@ export default function ContactForm({
         body: JSON.stringify(payload),
       });
 
+      const responseBody = (await res.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+
       if (!res.ok) {
-        throw new Error("Failed to send message");
+        throw new Error(responseBody?.error || "Failed to send message");
       }
 
       setStatus("success");
+      setStatusMessage("Message sent. Lakes Area R&R will follow up soon.");
       form.reset();
-    } catch {
+      await loadCaptcha();
+    } catch (error) {
       setStatus("error");
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please call 218-454-3336."
+      );
+      await loadCaptcha();
     }
   }
 
@@ -136,23 +193,45 @@ export default function ContactForm({
             required
           />
         </label>
+
+        <label className="full captcha-field">
+          Quick security check
+          <span className="captcha-question">
+            {captcha?.question || "Loading question..."}
+          </span>
+          <input
+            name="captchaAnswer"
+            type="number"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="Your answer"
+            required
+            disabled={!captcha}
+          />
+        </label>
+
+        <label className="bot-field" aria-hidden="true">
+          Website
+          <input
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </label>
       </div>
 
-      <button type="submit" disabled={status === "sending"}>
+      <button type="submit" disabled={status === "sending" || !captcha}>
         <FiSend />
         {status === "sending" ? "Sending..." : buttonLabel}
       </button>
 
       {status === "success" ? (
-        <p className="form-status success">
-          Message sent. Lakes Area R&R will follow up soon.
-        </p>
+        <p className="form-status success">{statusMessage}</p>
       ) : null}
 
       {status === "error" ? (
-        <p className="form-status error">
-          Something went wrong. Please call 218-454-3336.
-        </p>
+        <p className="form-status error">{statusMessage}</p>
       ) : null}
     </form>
   );
